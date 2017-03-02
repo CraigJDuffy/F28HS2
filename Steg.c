@@ -5,16 +5,10 @@
 
 //Linked List Implementation
 typedef struct list {char * data; struct list * next;} lNode;
-
-//One Pixel of a PPM Image
-typedef struct{
-  unsigned char red, green, blue;
-} PPMPixel;
-
 //PPM Image
 typedef struct{
-  int width, height, max;
-  lNode *pHead, *cHead;
+  int width, height, max, pHead;
+  lNode *cHead;
 }PPMImage;
 
 
@@ -23,11 +17,10 @@ PPMImage getPPM(FILE * fd){
     PPMImage  * currImage; // Create a new pointer to a PPMImage
     currImage = (PPMImage *) malloc(sizeof(PPMImage)); //allocate space for it
 
-    lNode * curNode; //Create a new pointer to a lNode
+    lNode * currNode; //Create a new pointer to a lNode
     char * curChar; // Create a pointer to a char
-    curNode = (lNode *) malloc(sizeof(lNode)); //Create space in memory for the node
-    currImage->cHead = curNode;
-    printf("\n %p", curNode);
+    currNode = (lNode *) malloc(sizeof(lNode)); //Create space in memory for the node
+    currImage->cHead = currNode;
 
     char line[70]; //MAX a line can be in valid PPM
     fgets(line, 70 , fd); //Get PPM File Code
@@ -42,59 +35,59 @@ PPMImage getPPM(FILE * fd){
     fgets(line, 70 , fd); //Get the next line from the file
     while(line[0] == '#'){ //Line is A Comment
         curChar = (char *) malloc(strlen(line) * sizeof(char)); //allocate space to store it
-        curNode->data = strcpy(curChar, line); //store it
-        curNode->next = (lNode *) malloc(sizeof(lNode));//create a new node
-        curNode = curNode->next; //set the pointer to the next node
+        currNode->data = strcpy(curChar, line); //store it
+        currNode->next = (lNode *) malloc(sizeof(lNode));//create a new node
+        currNode = currNode->next; //set the pointer to the next node
+        printf("%s", currNode->data);
         fgets(line, 70 , fd);//read the next line
     }
-    //End Reading Comments -- HEAD OF LLIST APPEARS TO BE STORED
+    currNode->next = NULL;
+    //End Reading Comments
 
-    //Read Width and height -- WORKING
-    int imageWidth, imageHeight; //Create temp varibles to store values
+    //Read Width and height
+    int imageWidth, imageHeight, imageSize; //Create temp varibles to store values
     sscanf(line, "%d %d", &imageWidth, &imageHeight); //read formatted input
     currImage->width =  imageWidth; // store value of width
     currImage->height = imageHeight; // store value of height
+    imageSize = imageHeight * imageWidth;
     //End reading Width and Height
 
-    //Read IntMaxColour Val -- WORKING
+    //Read IntMaxColour Val
     int intMax;
     fgets(line, 70, fd);
     sscanf(line, "%d", &intMax); //read formatted input
     currImage->max = intMax;
-    printf("\n");
 
     //Begin Reading Pixels -- Currently does not store
-    int r, g, b, count;
-    PPMPixel * currPixel;
-    currPixel = (PPMPixel *) malloc(sizeof(PPMPixel)); //allocate space for it
-    while(line[0] != EOF){
-      if(fgets(line,70,fd) == NULL){
-       printf("\n Finished reading file: ");
-       curNode = currImage->cHead;
-       printf("\n %p", curNode);
-       printf("\n Width: %d ", currImage->width);
-       printf("\n Height: %d ", currImage->height);
-       printf("\n MaxColVal: %d", currImage->max);
-       printf("\n PixelData: %p" , currImage->pHead);
-       printf("\n");
-       exit(1);
-      }
-      else{
-      sscanf(line, "%d %d %d", &r, &g, &b);
-      currPixel->red = r;
-      currPixel->green = g;
-      currPixel->blue =b;
-     // curNode->data = currPixel;
-      curNode->next = (lNode *) malloc(sizeof(lNode));//create a new node
-      curNode = curNode->next;
+    int r, g, b, column, row;
+    int  pixels [imageSize] [3];
+    currImage->pHead = pixels;
+    for ( column = 0; column < (imageSize); column++){
+      fgets(line, 70, fd);
+      sscanf(line, "%d %d %d", &r, &g, &b );
+      for ( row = 0; row < 1; row++){
+        pixels [column] [row] = r;
+        pixels [column] [row + 1] = g;
+        pixels [column] [row + 2] = b;
       }
     }
 return * currImage;
 }
 
 void showPPM(PPMImage i){
+  printf("\n P3");
+  lNode * currNode;
+  currNode = (lNode *) malloc(sizeof(lNode)); //Create space in memory for the node
+  while (currNode != NULL){
+    printf("\n %s", currNode->data);
+    currNode = currNode->next;
+  }
+  printf("\n %d %d", i.width, i.height);
+  printf("\n %d \n", i.max);
+//  printf("\n Pixels: %p \n", i.pHead);
+
 }
 
 int main(int argc, char ** argv){
-  getPPM(fopen(argv[1], "r"));
+  showPPM(getPPM(fopen(argv[1], "r")));
 }
