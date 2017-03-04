@@ -38,10 +38,9 @@ PPMImage getPPM(FILE * fd){
         currNode->data = strcpy(curChar, line); //store it
         currNode->next = (lNode *) malloc(sizeof(lNode));//create a new node
         currNode = currNode->next; //set the pointer to the next node
-        printf("%s", currNode->data);
+        currNode->next = NULL;
         fgets(line, 70 , fd);//read the next line
     }
-    currNode->next = NULL;
     //End Reading Comments
 
     //Read Width and height
@@ -61,7 +60,7 @@ PPMImage getPPM(FILE * fd){
     //Begin Reading Pixels -- Currently does not store
     int r, g, b, column, row;
     int  pixels [imageSize] [3];
-    currImage->pHead = pixels;
+  //  currImage->pHead = pixels;
     for ( column = 0; column < (imageSize); column++){
       fgets(line, 70, fd);
       sscanf(line, "%d %d %d", &r, &g, &b );
@@ -77,14 +76,14 @@ return * currImage;
 void showPPM(PPMImage i){
   printf("\n P3");
   lNode * currNode;
-  currNode = (lNode *) malloc(sizeof(lNode)); //Create space in memory for the node
-  while (currNode != NULL){
+  currNode = i.cHead;
+  while (currNode->next != NULL){
     printf("\n %s", currNode->data);
     currNode = currNode->next;
   }
   printf("\n %d %d", i.width, i.height);
   printf("\n %d \n", i.max);
-//  printf("\n Pixels: %p \n", i.pHead);
+//printf("\n Pixels: %p \n", i.pHead);
 
 }
 
