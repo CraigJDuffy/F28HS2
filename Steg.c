@@ -7,7 +7,7 @@
 typedef struct list {char * data; struct list * next;} lNode;
 //PPM Image
 typedef struct{
-  int width, height, max, pHead;
+  int width, height, max, **pHead;
   lNode *cHead;
 }PPMImage;
 
@@ -57,18 +57,19 @@ PPMImage getPPM(FILE * fd){
     sscanf(line, "%d", &intMax); //read formatted input
     currImage->max = intMax;
 
-    //Begin Reading Pixels -- Currently does not store
+    //Begin Reading Pixels
     int r, g, b, column, row;
-    int  pixels [imageSize] [3];
-  //  currImage->pHead = pixels;
+    int ** pixels = (int **) malloc(sizeof(int) * imageSize);
+
     for ( column = 0; column < (imageSize); column++){
+      pixels [column] = malloc(3 * sizeof(int));
       fgets(line, 70, fd);
       sscanf(line, "%d %d %d", &r, &g, &b );
-      for ( row = 0; row < 1; row++){
-        pixels [column] [row] = r;
-        pixels [column] [row + 1] = g;
-        pixels [column] [row + 2] = b;
-      }
+      pixels [column] [row] = r;
+      pixels [column] [row + 1] = g;
+      pixels [column] [row + 2] = b;
+
+      printf("\n %d    %d    %d   ", pixels [column] [row], pixels [column] [row +1], pixels [column] [row +2]);
     }
 return * currImage;
 }
@@ -83,9 +84,15 @@ void showPPM(PPMImage i){
   }
   printf("\n %d %d", i.width, i.height);
   printf("\n %d \n", i.max);
-//printf("\n Pixels: %p \n", i.pHead);
+  printf("\n Pixels: %p \n", i.pHead);
+  int counter = 0;
 
+ /*while(counter < i.width * i.height){
+    printf("%d", i.pHead[counter][counter]);
+    counter ++;
+  }*/
 }
+
 
 int main(int argc, char ** argv){
   showPPM(getPPM(fopen(argv[1], "r")));
