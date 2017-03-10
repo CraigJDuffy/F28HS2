@@ -18,8 +18,8 @@ PPMImage getPPM(FILE * fd){
     currImage = (PPMImage *) malloc(sizeof(PPMImage)); //allocate space for it
 
     lNode * currNode; //Create a new pointer to a lNode
-    char * curChar; // Create a pointer to a char
     currNode = (lNode *) malloc(sizeof(lNode)); //Create space in memory for the node
+    char * currChar; // Create a pointer to a char
     currImage->cHead = currNode;
 
     char line[70]; //MAX a line can be in valid PPM
@@ -34,8 +34,8 @@ PPMImage getPPM(FILE * fd){
     //Begin Reading Comments
     fgets(line, 70 , fd); //Get the next line from the file
     while(line[0] == '#'){ //Line is A Comment
-        curChar = (char *) malloc(strlen(line) * sizeof(char)); //allocate space to store it
-        currNode->data = strcpy(curChar, line); //store it
+        currChar = (char *) malloc(strlen(line) * sizeof(char)); //allocate space to store it
+        currNode->data = strcpy(currChar, line); //store it
         currNode->next = (lNode *) malloc(sizeof(lNode));//create a new node
         currNode = currNode->next; //set the pointer to the next node
         currNode->next = NULL;
